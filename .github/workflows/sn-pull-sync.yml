@@ -1,0 +1,78 @@
+name: sn-pull-sync - Pull instance changes into mydev
+
+# Manual. Exports the app from DEV or PROD as Fluent source and commits it to mydev.
+# Review the commit, then `git pull origin mydev` locally.
+# Choosing "prod" uses the production environment, so it waits for that approval.
+on:
+  workflow_dispatch:
+    inputs:
+      instance:
+        description: Instance to pull from
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - prod
+
+concurrency:
+  group: sn-pull-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  pull:
+    name: Transform ${{ inputs.instance }} into mydev
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.instance == 'prod' && 'production' || 'development' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mydev
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Transform from DEV
+        if: inputs.instance == 'dev'
+        env:
+          SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL
+          SN_SDK_AUTH_TYPE: basic
+          SN_SDK_INSTANCE_URL: ${{ secrets.SN_DEV_INSTANCE }}
+          SN_SDK_USER: ${{ secrets.SN_DEV_USER }}
+          SN_SDK_USER_PWD: ${{ secrets.SN_DEV_PASS }}
+        run: pnpm run transform
+
+      - name: Transform from PROD
+        if: inputs.instance == 'prod'
+        env:
+          SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL
+          SN_SDK_AUTH_TYPE: basic
+          SN_SDK_INSTANCE_URL: ${{ secrets.SN_PROD_INSTANCE }}
+          SN_SDK_USER: ${{ secrets.SN_PROD_USER }}
+          SN_SDK_USER_PWD: ${{ secrets.SN_PROD_PASS }}
+        run: pnpm run transform
+
+      - name: Commit changes
+        env:
+          SOURCE: ${{ inputs.instance }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes from $SOURCE; mydev is already up to date."
+          else
+            git commit -m "sync: pull from ServiceNow $SOURCE on $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push origin mydev
+          fi

@@ -1,0 +1,124 @@
+name: nowdev - Build, Deploy DEV, Playwright
+
+# Flow: git push origin mydev:nowdev  ->  this pipeline.
+on:
+  push:
+    branches: [nowdev]
+  workflow_dispatch:
+
+concurrency:
+  group: nowdev-pipeline
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # --- Stage 1: typecheck, lint, build (no instance needed) --------------------
+  build:
+    name: Typecheck, lint and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate now.config.json
+        run: |
+          node -e "
+            const cfg = require('./now.config.json');
+            if (!cfg.scope || !cfg.scopeId || !cfg.name) {
+              console.error('now.config.json is missing scope, scopeId or name');
+              process.exit(1);
+            }
+            console.log('now.config.json OK:', cfg.name, '(' + cfg.scope + ')');
+          "
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      # --frozenKeys fails the build if src/fluent/generated/keys.ts is stale,
+      # which would otherwise create duplicate records on the instance.
+      - name: Build (frozen keys)
+        run: pnpm build:ci
+
+  # --- Stage 2: deploy to the DEV instance -------------------------------------
+  deploy-dev:
+    name: Deploy to ServiceNow DEV
+    runs-on: ubuntu-latest
+    needs: build
+    environment: development
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # now-sdk install builds and packages from source itself, so the build
+      # output of the previous job is not passed along.
+      - name: Install app on DEV
+        env:
+          SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL
+          SN_SDK_AUTH_TYPE: basic
+          SN_SDK_INSTANCE_URL: ${{ secrets.SN_DEV_INSTANCE }}
+          SN_SDK_USER: ${{ secrets.SN_DEV_USER }}
+          SN_SDK_USER_PWD: ${{ secrets.SN_DEV_PASS }}
+        run: pnpm run deploy
+
+  # --- Stage 3: Playwright against DEV ------------------------------------------
+  playwright-dev:
+    name: Playwright against DEV
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    environment: development
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        env:
+          SN_DEV_INSTANCE: ${{ secrets.SN_DEV_INSTANCE }}
+          SN_DEV_USER: ${{ secrets.SN_DEV_USER }}
+          SN_DEV_PASS: ${{ secrets.SN_DEV_PASS }}
+          CI: 'true'
+          HEADLESS: 'true'
+        run: pnpm test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-nowdev-report
+          path: playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore

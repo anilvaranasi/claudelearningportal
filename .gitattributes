@@ -1,0 +1,3 @@
+# Keep LF in the working tree on every OS. The Now SDK writes LF, and
+# `now-sdk build --frozenKeys` fails if Git on Windows checks keys.ts out as CRLF.
+* text=auto eol=lf

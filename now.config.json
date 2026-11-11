@@ -1,0 +1,15 @@
+{
+  "scope": "x_snc_claudelearni",
+  "scopeId": "33d7bdcde59de666466026aba0b772a9",
+  "name": "ClaudeLearningPortal",
+  "metadataDir": "src/plugin-xmls",
+  "appOutputDir": "dist-metadata/app",
+  "packageSourceCodeOnInstance": true,
+  "staticContent": {
+    "assets": {
+      "./public/**": {
+        "publicPath": "[$config.aiux.basename]/public"
+      }
+    }
+  }
+}

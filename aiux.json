@@ -1,0 +1,14 @@
+{
+  "name": "ClaudeLearningPortal",
+  "projectId": "x_snc_claudelearni_claudelearningportal",
+  "basename": "claudelearningportal",
+  "srcDir": "src/lux",
+  "landing": "/home",
+  "createAnalyticsApp": true,
+  "development": {
+    "token": ""
+  },
+  "build": {
+    "exclude": ["**/*.test.js", "**/test/**"]
+  }
+}

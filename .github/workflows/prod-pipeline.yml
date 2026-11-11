@@ -1,0 +1,124 @@
+name: prod - Playwright gate, Deploy PROD, Tag
+
+# Flow: PR nowdev -> prod. Merge triggers: gate on DEV -> build -> approval -> deploy PROD -> tag.
+# The "production" GitHub environment must have a required reviewer
+# (Settings > Environments > production) so the deploy waits for manual approval.
+on:
+  push:
+    branches: [prod]
+  pull_request:
+    branches: [prod]
+  workflow_dispatch:
+
+concurrency:
+  group: prod-pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  # --- Stage 1: mandatory gate - tests must pass on DEV first -------------------
+  playwright-gate:
+    name: Playwright gate against DEV
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Playwright tests against DEV
+        env:
+          SN_DEV_INSTANCE: ${{ secrets.SN_DEV_INSTANCE }}
+          SN_DEV_USER: ${{ secrets.SN_DEV_USER }}
+          SN_DEV_PASS: ${{ secrets.SN_DEV_PASS }}
+          CI: 'true'
+          HEADLESS: 'true'
+        run: pnpm test
+
+      - name: Upload gate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-prod-gate-report
+          path: playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  # --- Stage 2: clean production build (runs on PRs too, deploy does not) -------
+  build-prod:
+    name: Clean build for PROD
+    runs-on: ubuntu-latest
+    needs: playwright-gate
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build (frozen keys)
+        run: pnpm build:ci
+
+  # --- Stage 3: deploy to PROD after manual approval, then tag -------------------
+  deploy-prod:
+    name: Deploy to ServiceNow PROD
+    runs-on: ubuntu-latest
+    needs: build-prod
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install app on PROD
+        env:
+          SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL
+          SN_SDK_AUTH_TYPE: basic
+          SN_SDK_INSTANCE_URL: ${{ secrets.SN_PROD_INSTANCE }}
+          SN_SDK_USER: ${{ secrets.SN_PROD_USER }}
+          SN_SDK_USER_PWD: ${{ secrets.SN_PROD_PASS }}
+        run: pnpm run deploy
+
+      - name: Create release tag
+        run: |
+          TAG="release-$(date -u +'%Y%m%d-%H%M%S')"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Production release $TAG (Playwright gate passed)"
+          git push origin "$TAG"
