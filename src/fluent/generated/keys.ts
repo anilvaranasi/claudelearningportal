@@ -7,100 +7,100 @@ declare global {
                 explicit: {
                     'aiux-color-swatch|claudelearningportal': {
                         table: 'sys_aix_color_swatch'
-                        id: '76457c855f30f80dd6ee1066e635b65e'
+                        id: 'b74df7f405911ee910e037d21b87a798'
                     }
-                    'aiux-experience-page-rel|x-snc-claudelearni-home-page': {
+                    'aiux-experience-page-rel|x-146833-claudel-home-page': {
                         table: 'sys_aix_experience_page_rel'
-                        id: '0d4bb64b60e27ba17415f8dce62d523a'
+                        id: 'e47d16de2cbed0f415ca55fb7387154d'
                     }
-                    'aiux-experience-page-rel|x-snc-claudelearni-incidents-page': {
+                    'aiux-experience-page-rel|x-146833-claudel-incidents-page': {
                         table: 'sys_aix_experience_page_rel'
-                        id: '5fe704187a849df1c3ffb3385e30363f'
+                        id: 'a4c2a8c4dd47851479fbf676f4fb5d66'
                     }
                     'aiux-experience-prop|appHeadCss': {
                         table: 'sys_aix_experience_properties'
-                        id: 'c2267ad7f8f8a7de42babe5df15cbeb2'
+                        id: '575b19f2b1cd67d418aca6b7a53df77a'
                     }
                     'aiux-experience-prop|appPlatform': {
                         table: 'sys_aix_experience_properties'
-                        id: '03d4707f8051a4302e4f7bb916ebea4c'
+                        id: '6f35ab2380a917c4be028b11a6ce253d'
                     }
                     'aiux-experience-prop|appTailwindCss': {
                         table: 'sys_aix_experience_properties'
-                        id: '83fcd02462d7fdb6b011ce0da7d194d4'
+                        id: 'a1dffd6f2d9298136074ba352b23a1fc'
                     }
                     'aiux-experience|claudelearningportal': {
                         table: 'sys_aix_experience'
-                        id: 'a480ec76f8eb59f0567eec296d528941'
+                        id: '70961d51f3d6767e24089b4314b69544'
                     }
                     'aiux-layout-widget|lifecycle': {
                         table: 'sys_aix_widget'
-                        id: '9ebfe18fc5b379937c985fd1bc1553f0'
+                        id: '850aaa1feed143330757cd64005a859c'
                     }
-                    'aiux-page-widget|x-snc-claudelearni-home-page': {
+                    'aiux-page-widget|x-146833-claudel-home-page': {
                         table: 'sys_aix_widget'
-                        id: 'f73713ad2a1511e27ed3eb0ecf0db5f0'
+                        id: 'd7d2fcfd3d2582b5d4e5b68984c439b1'
                     }
-                    'aiux-page-widget|x-snc-claudelearni-incidents-page': {
+                    'aiux-page-widget|x-146833-claudel-incidents-page': {
                         table: 'sys_aix_widget'
-                        id: '002e0ab42c25216d2c3d91e0a3e80a1f'
+                        id: '538a745cf4a5f379fabceb0707b33872'
                     }
-                    'aiux-page|x-snc-claudelearni-home-page': {
+                    'aiux-page|x-146833-claudel-home-page': {
                         table: 'sys_aix_page'
-                        id: '79672b9a6d583b89811bea5100cdf49a'
+                        id: '289a7f45b2603dafef01b8168ae49f39'
                     }
-                    'aiux-page|x-snc-claudelearni-incidents-page': {
+                    'aiux-page|x-146833-claudel-incidents-page': {
                         table: 'sys_aix_page'
-                        id: '6cf48aa298f65121e9a5b7823b51c91c'
+                        id: '638e223bff5fced2698fc0057dae2cdf'
                     }
-                    'aiux-project|x_snc_claudelearni_claudelearningportal': {
+                    'aiux-project|x_146833_claudel_claudelearningportal': {
                         table: 'sys_aix_project'
-                        id: 'a8ecdc44900208a2891f74a7ef3e5c68'
+                        id: 'e0cc3fbda704c155824956f6a2c998e2'
                     }
                     'aiux-theme|claudelearningportal': {
                         table: 'sys_aix_theme'
-                        id: 'd301de780fc4ed4bddd703ceb35f685c'
+                        id: '1e17d6edd3bc13e4521d827ecc0064ad'
                     }
                     'aiux-widget|aiux-hello-world': {
                         table: 'sys_aix_widget'
-                        id: '5a68f0431f80098291b56065a3515f58'
+                        id: 'f1ecb1fbd0e9036f6031744e4e0a39c1'
                     }
                     'aiux-widget|aiux-studio-preview': {
                         table: 'sys_aix_widget'
-                        id: 'fd937f59b686be83b067a1fe3c6d9006'
+                        id: '2d3ac791de2175f3620a5db8ecbf77fb'
                         deleted: true
                     }
                     bom_json: {
                         table: 'sys_module'
-                        id: '5a3a88ac22364d8283d6c985d58477c0'
+                        id: '4cc91e1b4df04485942d397e6e613610'
                     }
                     claude_api_key: {
                         table: 'sys_properties'
-                        id: '5b1827560ada4224960b0cc036a3ce89'
+                        id: 'aebe552c1fcb441dbc2f1bc804a6d3d1'
                     }
                     package_json: {
                         table: 'sys_module'
-                        id: '3abbb4abd69c443ebcb4a51b068971e3'
+                        id: '4203b43986ed479ebc130aecf70bbf3f'
                     }
                     'sys-analytics-app|claudelearningportal': {
                         table: 'sys_analytics_app'
-                        id: 'f07c6b24be3119ae9cbf91eb9ca31a5b'
+                        id: 'ac662a6d2443d4e76775f5b2b6ef75a4'
                     }
                 }
                 composite: [
                     {
-                        table: 'sn_glider_source_artifact'
-                        id: '260bc949b7554c13a5a91a0416f93220'
+                        table: 'sn_glider_source_artifact_m2m'
+                        id: '1a8f127f74a74811a73cd351ea0a7c16'
                         key: {
-                            name: 'aiux-source a8ecdc44900208a2891f74a7ef3e5c68'
+                            application_file: 'e0cc3fbda704c155824956f6a2c998e2'
+                            source_artifact: 'd172d357065c43279ea4f301dfde253d'
                         }
                     },
                     {
-                        table: 'sn_glider_source_artifact_m2m'
-                        id: '5253b3d8c53b41c39379d0eae7682068'
+                        table: 'sn_glider_source_artifact'
+                        id: 'd172d357065c43279ea4f301dfde253d'
                         key: {
-                            application_file: 'a8ecdc44900208a2891f74a7ef3e5c68'
-                            source_artifact: '260bc949b7554c13a5a91a0416f93220'
+                            name: 'aiux-source e0cc3fbda704c155824956f6a2c998e2'
                         }
                     },
                 ]
