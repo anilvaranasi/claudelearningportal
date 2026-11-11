@@ -72,8 +72,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # now-sdk install builds and packages from source itself, so the build
-      # output of the previous job is not passed along.
+      # now-sdk install only zips an existing build (dist-metadata/app); it does
+      # not build. This job runs on a fresh runner, so build here first.
+      - name: Build (frozen keys)
+        run: pnpm build:ci
+
       - name: Install app on DEV
         env:
           SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL

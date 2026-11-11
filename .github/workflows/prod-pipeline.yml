@@ -106,6 +106,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # now-sdk install only zips an existing build; build on this fresh runner first.
+      - name: Build (frozen keys)
+        run: pnpm build:ci
+
       - name: Install app on PROD
         env:
           SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL
