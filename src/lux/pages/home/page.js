@@ -4,7 +4,7 @@ import {AIUXElement} from '@servicenow/aiux/aiux-components-core';
 import {i18n} from '@servicenow/aiux/aiux-services';
 import './components/aiux-feature-card.js';
 
-@customElement('x-146833-claudel-home-page')
+@customElement('x-ibmin-claudel-home-page')
 export default class HomePage extends AIUXElement {
   // Layout, color, and spacing all come from DaisyUI components + Tailwind
   // utilities below; `static styles` is reserved for `:host` only.

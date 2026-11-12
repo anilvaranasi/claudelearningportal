@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **App** | ClaudeLearningPortal (scope `x_146833_claudel`, basename `claudelearningportal`) |
+| **App** | ClaudeLearningPortal (scope `x_ibmin_claudel`, basename `claudelearningportal`) |
 | **Instance** | DEV |
 | **Date found** | 2026-11-11 |
 | **Root cause** | The AI Experience Framework plugins were not installed on the DEV instance. |
@@ -53,7 +53,7 @@ The app code and pipeline are not the cause:
 - CI job **Deploy to ServiceNow DEV** (`now-sdk install`): success, after the scope fix below.
 - The build reported the app as compatible with any AIUX runtime (Karuna) since 22.67.0.
 
-An unrelated problem was fixed on the way. The first install failed with `Unable to install third party application 'x_snc_claudelearni'`. `x_snc_` is reserved for ServiceNow Inc. apps, so the scope was changed to the instance's company code, `x_146833_claudel` (commit `4b3d92c`).
+An unrelated problem was fixed on the way. The first install failed with `Unable to install third party application 'x_snc_claudelearni'`. `x_snc_` is reserved for ServiceNow Inc. apps, so the scope was changed to the company code of the instance (commit `4b3d92c` used `x_146833_claudel`). The DEV instance was later replaced by a new one with the code `x_ibmin_`, so the scope is now `x_ibmin_claudel`. Each instance has its own company code, so a scope that works on one instance will be rejected on another with a different code. This also applies to PROD.
 
 ## Fix (instance administration)
 

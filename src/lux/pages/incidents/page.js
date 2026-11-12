@@ -6,7 +6,7 @@ import '@servicenow/aiux/aiux-components-list';
 import {ListDataManager} from '@servicenow/aiux/aiux-components-list';
 import {resolveUrlParams, writeToUrl} from './url-sync.js';
 
-@customElement('x-146833-claudel-incidents-page')
+@customElement('x-ibmin-claudel-incidents-page')
 export default class IncidentsPage extends AIUXElement {
   static styles = css`
     :host {
