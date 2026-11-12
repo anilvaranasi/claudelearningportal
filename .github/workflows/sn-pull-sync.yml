@@ -1,8 +1,16 @@
 name: sn-pull-sync - Pull instance changes into mydev
 
-# Manual. Exports the app from DEV or PROD as Fluent source and commits it to mydev.
-# Review the commit, then `git pull origin mydev` locally.
-# Choosing "prod" uses the production environment, so it waits for that approval.
+# Manual. Runs `now-sdk transform` (no --from) against DEV or PROD, which reads the
+# app's metadata from the instance and rewrites the matching Fluent (.now.ts) files.
+# Use it after editing something directly on the instance (a flow, an ACL, a form
+# layout) so git stays the single source of truth.
+#
+# Run it from the Actions tab: "Use workflow from" = mydev.
+#   dry_run = true  (default): shows what would change, commits nothing.
+#   dry_run = false: commits the changes to mydev.
+# Then `git pull origin mydev` locally, review, and deploy with `git push origin mydev:nowdev`.
+#
+# Choosing "prod" uses the production environment (its secrets).
 on:
   workflow_dispatch:
     inputs:
@@ -14,6 +22,11 @@ on:
         options:
           - dev
           - prod
+      dry_run:
+        description: Preview only. Show the changes, do not commit or push.
+        required: true
+        default: true
+        type: boolean
 
 concurrency:
   group: sn-pull-sync
@@ -43,6 +56,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # transform overwrites local files for every record it updates. The checkout
+      # is clean, so nothing local is lost here. To protect a statement you want
+      # managed from code only, mark it with `// @fluent-disable-sync`.
       - name: Transform from DEV
         if: inputs.instance == 'dev'
         env:
@@ -63,16 +79,46 @@ jobs:
           SN_SDK_USER_PWD: ${{ secrets.SN_PROD_PASS }}
         run: pnpm run transform
 
-      - name: Commit changes
+      - name: Show changes
+        run: |
+          git add -A
+          {
+            echo "## sn-pull-sync from ${{ inputs.instance }}"
+            echo
+            if git diff --cached --quiet; then
+              echo "No changes. mydev already matches the instance."
+            else
+              echo "Changed files:"
+              echo
+              echo '```'
+              git diff --cached --stat
+              echo '```'
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload full diff
+        if: always()
+        run: git diff --cached > sn-pull.diff || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sn-pull-diff
+          path: sn-pull.diff
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Commit and push to mydev
+        if: inputs.dry_run == false
         env:
           SOURCE: ${{ inputs.instance }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
           if git diff --cached --quiet; then
             echo "No changes from $SOURCE; mydev is already up to date."
           else
             git commit -m "sync: pull from ServiceNow $SOURCE on $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase origin mydev
             git push origin mydev
           fi
