@@ -45,13 +45,13 @@ Use `pnpm run deploy`, not `pnpm deploy`: pnpm's built-in workspace deployment c
 ## App Shell Defaults
 
 - `application.js` uses the shared `aiux-nav-layout` with the unified sidebar and user menu (`unifiedExperience: true`). Reuse the shell rather than copying Core UI components.
-- Other nav features (global Search/Browse menus, notifications, session controls, theme toggle, density picker) are on by default, so `application.js` doesn't list them. Keep the app-owned Home and Incidents items alongside the shared menus.
+- Other nav features (global Search/Browse menus, notifications, session controls, theme toggle, density picker) are on by default, so `application.js` doesn't list them. Keep the app-owned items (currently Home) alongside the shared menus.
 - To turn a default feature off, add it to `features` in `application.js` as `false` (for example `notifications: false`). Platform permissions still govern privileged actions; menu visibility does not grant roles. Colors and shape are configured separately in `theme.js`.
 
 ## Verification and Generated Files
 
 - SDK installation success does not verify runtime access or rendering. Check authenticated SSR responses and browser behavior; an unauthenticated HTTP 302 only confirms an authentication redirect.
-- The starter Home and Incidents pages have no explicit page ACL decorators. Review intended page access before deployment; do not disable ACL checks to fix routing problems.
+- The starter Home page has no explicit page ACL decorator. Review intended page access before deployment; do not disable ACL checks to fix routing problems.
 - Build output, `.aiux-runtime/`, and `<srcDir>/pages/.widget-sandbox*/` are generated. `<srcDir>` is the value of `srcDir` in this app's `aiux.json` (scaffolded as `src/lux`). Git and ESLint exclude the runtime cache and sandbox directories; keep authored pages and widgets under all existing lint rules.
 
 ## Optional Local Karuna Checkout

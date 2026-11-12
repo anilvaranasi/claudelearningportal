@@ -32,13 +32,10 @@ export default class HomePage extends AIUXElement {
               </h1>
               <p class="text-sm leading-relaxed text-text-secondary">
                 ${i18n.getMessage(
-                  "We've scaffolded a basic two-page application to accelerate your development."
+                  "We've scaffolded a basic application to accelerate your development."
                 )}
               </p>
               <div class="aiux-card-actions mt-2">
-                <a class="aiux-btn aiux-btn-primary" href="./incidents">
-                  ${i18n.getMessage('View incident list')}
-                </a>
                 <a class="aiux-btn aiux-btn-outline" href="./home">
                   ${i18n.getMessage('Start from home')}
                 </a>

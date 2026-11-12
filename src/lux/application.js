@@ -12,11 +12,6 @@ export default {
         icon: 'home',
         title: i18n.getMessage('Home'),
         action: {type: 'navigate', path: '/home'}
-      },
-      {
-        icon: 'list',
-        title: i18n.getMessage('Incidents'),
-        action: {type: 'navigate', path: '/incidents'}
       }
     ];
 

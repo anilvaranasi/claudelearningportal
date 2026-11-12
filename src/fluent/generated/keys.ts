@@ -13,10 +13,6 @@ declare global {
                         table: 'sys_aix_experience_page_rel'
                         id: '6746a1315bd4958993619a3ae7eb5807'
                     }
-                    'aiux-experience-page-rel|x-ibmin-claudel-incidents-page': {
-                        table: 'sys_aix_experience_page_rel'
-                        id: 'ad9ccff9eedea5e70cadc204038a4708'
-                    }
                     'aiux-experience-prop|appHeadCss': {
                         table: 'sys_aix_experience_properties'
                         id: 'b3145f78d9828428ee7b58c5d9263a50'
@@ -41,17 +37,9 @@ declare global {
                         table: 'sys_aix_widget'
                         id: '261bb65c69a995e8076850707353e494'
                     }
-                    'aiux-page-widget|x-ibmin-claudel-incidents-page': {
-                        table: 'sys_aix_widget'
-                        id: '56a47c67bb134d69198c312a0631b4ac'
-                    }
                     'aiux-page|x-ibmin-claudel-home-page': {
                         table: 'sys_aix_page'
                         id: '6b606cd2a6e6f7903b72848760fa560f'
-                    }
-                    'aiux-page|x-ibmin-claudel-incidents-page': {
-                        table: 'sys_aix_page'
-                        id: 'e190d03e8b6408064162e67251321a89'
                     }
                     'aiux-project|x_ibmin_claudel_claudelearningportal': {
                         table: 'sys_aix_project'
@@ -67,15 +55,15 @@ declare global {
                     }
                     bom_json: {
                         table: 'sys_module'
-                        id: '2fc81e55aaae445eab544393b9811800'
+                        id: '0487ed2a5459482ca86aa1be55552636'
                     }
                     claude_api_key: {
                         table: 'sys_properties'
-                        id: 'a42a92db4020406e9bd6f3cd1dc1d579'
+                        id: '3b1f0494fbf94e19b49482ebb27fa1e0'
                     }
                     package_json: {
                         table: 'sys_module'
-                        id: '4e55531ce3bf47f69c115c765b0b4be5'
+                        id: 'ef792a3853bf4b5692553e0ed074a8f0'
                     }
                     'sys-analytics-app|claudelearningportal': {
                         table: 'sys_analytics_app'
@@ -85,17 +73,17 @@ declare global {
                 composite: [
                     {
                         table: 'sn_glider_source_artifact'
-                        id: 'cf908dde09e340b78faeb0ffd0a3617b'
+                        id: '4c66f33eefcf4d0d8e8eae6206effe67'
                         key: {
                             name: 'aiux-source cc1ba035956134867d46987f9abc40fe'
                         }
                     },
                     {
                         table: 'sn_glider_source_artifact_m2m'
-                        id: 'de68a2d9c34548349bb324323557fd43'
+                        id: '8e9a2c1e5a654720b9115be33ffa0aa4'
                         key: {
                             application_file: 'cc1ba035956134867d46987f9abc40fe'
-                            source_artifact: 'cf908dde09e340b78faeb0ffd0a3617b'
+                            source_artifact: '4c66f33eefcf4d0d8e8eae6206effe67'
                         }
                     },
                 ]
