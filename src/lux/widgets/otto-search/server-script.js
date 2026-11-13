@@ -1,4 +1,4 @@
-// "Ask Otto" search: one single-turn call to the Anthropic-compatible Claude API
+// "Ask Claude" search: one single-turn call to the Anthropic-compatible Claude API
 // (POST <base>/v1/messages). Claude is asked for JSON only:
 //   {"answer": string, "suggestions": string[]}
 // The API key lives in the private password2 property
@@ -14,7 +14,7 @@ export default function server(data, _options, input) {
   var MAX_SUGGESTIONS = 3;
   var MAX_SUGGESTION_CHARS = 200;
   var SYSTEM_PROMPT =
-    'You are Otto, a search assistant inside the Claude Learning Portal. ' +
+    'You are Claude, a search assistant inside the Claude Learning Portal. ' +
     'Answer the user question in 2 to 4 sentences. Then suggest up to 3 short ' +
     'follow-up prompts the user could ask next. ' +
     'Respond with JSON only, no markdown and no code fences, in exactly this ' +
@@ -41,7 +41,7 @@ export default function server(data, _options, input) {
     'https://api.servicesessentials.ibm.com'
   );
   var model = gs.getProperty('x_ibmin_claudel.claude_model', 'claude-sonnet-5-5');
-  // Otto only needs a 2 to 4 sentence answer plus three short suggestions, so
+  // The search only needs a 2 to 4 sentence answer plus three short suggestions, so
   // the property value is capped here. A smaller cap also keeps slow calls short.
   var maxTokens = Math.min(
     parseInt(gs.getProperty('x_ibmin_claudel.claude_max_tokens', '2048'), 10) ||
@@ -99,7 +99,7 @@ export default function server(data, _options, input) {
       }
     }
 
-    var parsed = parseOttoJson(text);
+    var parsed = parseAnswerJson(text);
     if (parsed) {
       data.answer = String(parsed.answer);
       data.suggestions = cleanSuggestions(
@@ -141,7 +141,7 @@ export default function server(data, _options, input) {
 
   // Returns {answer, suggestions} or null. Tolerates code fences and prose
   // around the JSON object.
-  function parseOttoJson(text) {
+  function parseAnswerJson(text) {
     var candidate = String(text || '')
       .trim()
       .replace(/^```(?:json)?\s*/i, '')

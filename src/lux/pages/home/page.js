@@ -19,7 +19,7 @@ export default class HomePage extends AIUXElement {
     }
   `;
 
-  // Each cell runs a search in the Otto dialog. The wording says what works:
+  // Each cell runs a search in the Claude answer dialog. The wording says what works:
   // text in, text out. Nothing here uploads a file or image.
   _capabilities() {
     return [
@@ -70,7 +70,7 @@ export default class HomePage extends AIUXElement {
             class="mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-semibold text-primary"
           >
             ${icon({name: 'bot', size: 'xs'})}
-            ${i18n.getMessage('Otto · Claude capability navigator')}
+            ${i18n.getMessage('Claude capability navigator')}
           </p>
           <h1
             class="font-serif text-4xl font-medium tracking-tight text-text-primary sm:text-5xl"
@@ -79,7 +79,7 @@ export default class HomePage extends AIUXElement {
           </h1>
           <p class="mx-auto mt-4 max-w-xl text-base text-text-secondary">
             ${i18n.getMessage(
-              'Search a capability or describe an idea. Otto answers in a few sentences and suggests what to ask next.'
+              'Search a capability or describe an idea. Claude answers in a few sentences and suggests what to ask next.'
             )}
           </p>
           <div class="mt-9 text-left">

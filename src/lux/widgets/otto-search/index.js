@@ -12,8 +12,8 @@ const {name, description, bestFor, chatCompatible, category, server, discoverabl
 const MAX_QUERY_CHARS = 1000;
 
 @customElement('aiux-otto-search')
-@name('Otto Search')
-@description('"Ask Otto" search bar. Shows a short Claude answer and follow-up prompts in a dialog. Calls Claude through a server script so the API key stays on the instance.')
+@name('Claude Search')
+@description('"Ask Claude" search bar. Shows a short Claude answer and follow-up prompts in a dialog. Calls Claude through a server script so the API key stays on the instance.')
 @bestFor('Letting users ask a quick question about Claude and explore follow-up questions.')
 @chatCompatible(false)
 @category('custom')
@@ -69,7 +69,7 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
 
   _focusInput() {
     if (isServer) return;
-    this.renderRoot.querySelector('#otto-query')?.focus();
+    this.renderRoot.querySelector('#claude-query')?.focus();
   }
 
   _errorMessage(code) {
@@ -84,13 +84,13 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
         );
       case 'rate_limited':
         return i18n.getMessage(
-          'Otto is busy right now. Please try again in a moment.'
+          'Claude is busy right now. Please try again in a moment.'
         );
       case 'bad_request':
         return i18n.getMessage('That question could not be sent. Please try again.');
       default:
         return i18n.getMessage(
-          'Otto could not answer right now. Please try again.'
+          'Claude could not answer right now. Please try again.'
         );
     }
   }
@@ -173,11 +173,11 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
       <form
         role="search"
         class="flex flex-col gap-4"
-        aria-label=${i18n.getMessage('Ask Otto')}
+        aria-label=${i18n.getMessage('Ask Claude')}
         @submit=${this._onSubmit}
       >
-        <label for="otto-query" class="sr-only">
-          ${i18n.getMessage('Ask Otto a question')}
+        <label for="claude-query" class="sr-only">
+          ${i18n.getMessage('Ask Claude a question')}
         </label>
         <div
           class="flex items-center gap-3 rounded-box border border-base-300 bg-base-100 p-2 pl-5 shadow-md focus-within:border-primary focus-within:ring-2 focus-within:ring-primary"
@@ -186,7 +186,7 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
             ${icon({name: 'magnifying-glass', size: 'md'})}
           </span>
           <input
-            id="otto-query"
+            id="claude-query"
             type="search"
             class="min-w-0 flex-1 bg-transparent py-3 text-base text-base-content outline-none"
             maxlength=${MAX_QUERY_CHARS}
@@ -232,7 +232,7 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
   _renderLoading() {
     return html`
       <div role="status" class="flex flex-col gap-3 py-2">
-        <span class="sr-only">${i18n.getMessage('Otto is thinking')}</span>
+        <span class="sr-only">${i18n.getMessage('Claude is thinking')}</span>
         <span class="aiux-skeleton h-4 w-full"></span>
         <span class="aiux-skeleton h-4 w-5/6"></span>
         <span class="aiux-skeleton h-4 w-2/3"></span>
@@ -310,13 +310,13 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
         open
         size="md"
         close-on-backdrop
-        label=${i18n.getMessage('Otto answer')}
+        label=${i18n.getMessage('Claude answer')}
         close-label=${i18n.getMessage('Close')}
         @aiux-modal:close=${this._onModalClose}
       >
         <h5 slot="header" class="flex items-center gap-2">
           ${icon({name: 'ai-sparkle', size: 'md'})}
-          ${i18n.getMessage('Otto answer')}
+          ${i18n.getMessage('Claude answer')}
         </h5>
         <p class="mb-3 break-words text-sm text-text-tertiary">${this._query}</p>
         <div aria-live="polite">${this._renderDialogBody()}</div>

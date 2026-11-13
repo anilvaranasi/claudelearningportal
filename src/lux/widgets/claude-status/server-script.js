@@ -10,7 +10,7 @@ export default function server(data, _options, input) {
   }
 
   // One minimal call: max_tokens 1, a one-word prompt. Same endpoint and
-  // headers as the Otto search, so a pass here means Otto can reach Claude too.
+  // headers as the Claude search, so a pass here means the search can reach Claude too.
   // Result codes: ok | not_configured | unauthorized | api_error | unreachable.
   var apiKey = gs.getProperty('x_ibmin_claudel.claude_api_key', '');
   if (!apiKey) {
