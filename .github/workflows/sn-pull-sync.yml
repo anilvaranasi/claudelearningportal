@@ -59,6 +59,10 @@ jobs:
       # transform overwrites local files for every record it updates. The checkout
       # is clean, so nothing local is lost here. To protect a statement you want
       # managed from code only, mark it with `// @fluent-disable-sync`.
+      # TEMPORARY debug capture for the "Block could not be parsed" failure.
+      # This repo is public, so the raw `-d` output is never printed or uploaded:
+      # it goes to a file, lines that could carry credentials are dropped, and
+      # only a trimmed tail is shown. The raw file is deleted before the step ends.
       - name: Transform from DEV
         if: inputs.instance == 'dev'
         env:
@@ -67,7 +71,15 @@ jobs:
           SN_SDK_INSTANCE_URL: ${{ secrets.SN_DEV_INSTANCE }}
           SN_SDK_USER: ${{ secrets.SN_DEV_USER }}
           SN_SDK_USER_PWD: ${{ secrets.SN_DEV_PASS }}
-        run: pnpm run transform
+        run: |
+          set +e
+          pnpm exec now-sdk transform -d > "$RUNNER_TEMP/transform-debug.raw" 2>&1
+          code=$?
+          echo "transform exit code: $code"
+          echo "--- filtered debug output (last 200 lines) ---"
+          grep -viE 'auth|token|cookie|passw|pwd|user|credential|session|bearer|secret|key|header' "$RUNNER_TEMP/transform-debug.raw" | cut -c1-300 | tail -n 200
+          rm -f "$RUNNER_TEMP/transform-debug.raw"
+          exit $code
 
       - name: Transform from PROD
         if: inputs.instance == 'prod'
