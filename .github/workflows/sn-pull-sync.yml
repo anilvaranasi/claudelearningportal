@@ -59,11 +59,10 @@ jobs:
       # transform overwrites local files for every record it updates. The checkout
       # is clean, so nothing local is lost here. To protect a statement you want
       # managed from code only, mark it with `// @fluent-disable-sync`.
-      # TEMPORARY debug capture for the "Block could not be parsed" failure.
-      # This repo is public, so the raw `-d` output is never printed or uploaded:
-      # it goes to a file, lines that could carry credentials are dropped, and
-      # only a trimmed tail is shown. The raw file is deleted before the step ends.
+      # The script tolerates ONE known SDK 4.14.0 failure (now.config.json) and
+      # marks the run partial; see .github/scripts/run-transform.sh.
       - name: Transform from DEV
+        id: transform_dev
         if: inputs.instance == 'dev'
         env:
           SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL
@@ -71,17 +70,10 @@ jobs:
           SN_SDK_INSTANCE_URL: ${{ secrets.SN_DEV_INSTANCE }}
           SN_SDK_USER: ${{ secrets.SN_DEV_USER }}
           SN_SDK_USER_PWD: ${{ secrets.SN_DEV_PASS }}
-        run: |
-          set +e
-          pnpm exec now-sdk transform -d > "$RUNNER_TEMP/transform-debug.raw" 2>&1
-          code=$?
-          echo "transform exit code: $code"
-          echo "--- filtered debug output (last 200 lines) ---"
-          grep -viE 'auth|token|cookie|passw|pwd|user|credential|session|bearer|secret|key|header' "$RUNNER_TEMP/transform-debug.raw" | cut -c1-300 | tail -n 200
-          rm -f "$RUNNER_TEMP/transform-debug.raw"
-          exit $code
+        run: bash .github/scripts/run-transform.sh
 
       - name: Transform from PROD
+        id: transform_prod
         if: inputs.instance == 'prod'
         env:
           SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL
@@ -89,14 +81,21 @@ jobs:
           SN_SDK_INSTANCE_URL: ${{ secrets.SN_PROD_INSTANCE }}
           SN_SDK_USER: ${{ secrets.SN_PROD_USER }}
           SN_SDK_USER_PWD: ${{ secrets.SN_PROD_PASS }}
-        run: pnpm run transform
+        run: bash .github/scripts/run-transform.sh
 
       - name: Show changes
+        env:
+          PARTIAL: ${{ steps.transform_dev.outputs.partial || steps.transform_prod.outputs.partial }}
         run: |
           git add -A
           {
             echo "## sn-pull-sync from ${{ inputs.instance }}"
             echo
+            if [ "$PARTIAL" = "true" ]; then
+              echo "> PARTIAL run: transform hit a known SDK error on now.config.json."
+              echo "> The file list below is a preview of what DEV serves. It cannot be committed."
+              echo
+            fi
             if git diff --cached --quiet; then
               echo "No changes. mydev already matches the instance."
             else
@@ -108,9 +107,11 @@ jobs:
             fi
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
+      # The repo is public, so the artifact leaves out src/fluent and
+      # now.config.json, which can carry instance property values.
       - name: Upload full diff
         if: always()
-        run: git diff --cached > sn-pull.diff || true
+        run: git diff --cached -- . ':!src/fluent' ':!now.config.json' > sn-pull.diff || true
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -124,7 +125,12 @@ jobs:
         if: inputs.dry_run == false
         env:
           SOURCE: ${{ inputs.instance }}
+          PARTIAL: ${{ steps.transform_dev.outputs.partial || steps.transform_prod.outputs.partial }}
         run: |
+          if [ "$PARTIAL" = "true" ]; then
+            echo "::error::Refusing to commit: the transform run was partial."
+            exit 1
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if git diff --cached --quiet; then
