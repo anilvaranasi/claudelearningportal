@@ -64,7 +64,7 @@ export default class HomePage extends AIUXElement {
 
   _renderHero() {
     return html`
-      <section class="rounded-box border border-base-300 bg-base-200">
+      <section class="rounded-box border border-base-300 bg-base-300">
         <div class="mx-auto max-w-4xl px-5 py-14 text-center sm:py-20">
           <p
             class="mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-semibold text-primary"
