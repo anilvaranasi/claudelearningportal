@@ -71,6 +71,7 @@ export default [
         GlideSystem: 'readonly',
         GlideUser: 'readonly',
         gs: 'readonly',
+        sn_ws: 'readonly',
         current: 'readonly',
         previous: 'readonly',
         action: 'readonly',

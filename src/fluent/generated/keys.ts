@@ -49,9 +49,17 @@ declare global {
                         table: 'sys_aix_theme'
                         id: 'abce3b749a5aa444161fcc231086aa71'
                     }
+                    'aiux-widget|aiux-claude-chat': {
+                        table: 'sys_aix_widget'
+                        id: 'c4de90a499da85f335116522bc0fd3db'
+                    }
                     'aiux-widget|aiux-hello-world': {
                         table: 'sys_aix_widget'
                         id: '0ee2ca2013c2b62f87576048ae7e2d5d'
+                    }
+                    'aiux-widget|aiux-otto-search': {
+                        table: 'sys_aix_widget'
+                        id: '62b0d8d34bec67078ec245285f7930c8'
                     }
                     bom_json: {
                         table: 'sys_module'
@@ -60,6 +68,18 @@ declare global {
                     claude_api_key: {
                         table: 'sys_properties'
                         id: '3b1f0494fbf94e19b49482ebb27fa1e0'
+                    }
+                    claude_base_url: {
+                        table: 'sys_properties'
+                        id: '0b605777810c4f85af394653133bc543'
+                    }
+                    claude_max_tokens: {
+                        table: 'sys_properties'
+                        id: 'f9457db41aa048f6b4d239bb28c3cbb2'
+                    }
+                    claude_model: {
+                        table: 'sys_properties'
+                        id: '7f13f5ecb9dc4e358f533c1b8f34a85d'
                     }
                     package_json: {
                         table: 'sys_module'
