@@ -41,9 +41,13 @@ export default function server(data, _options, input) {
     'https://api.servicesessentials.ibm.com'
   );
   var model = gs.getProperty('x_ibmin_claudel.claude_model', 'claude-sonnet-5-5');
-  var maxTokens =
+  // Otto only needs a 2 to 4 sentence answer plus three short suggestions, so
+  // the property value is capped here. A smaller cap also keeps slow calls short.
+  var maxTokens = Math.min(
     parseInt(gs.getProperty('x_ibmin_claudel.claude_max_tokens', '2048'), 10) ||
-    2048;
+      2048,
+    1024
+  );
 
   try {
     var request = new sn_ws.RESTMessageV2();
@@ -60,16 +64,29 @@ export default function server(data, _options, input) {
         messages: [{role: 'user', content: query}]
       })
     );
-    request.setHttpTimeout(90000);
+    // A synchronous call holds a request thread, so keep the wait short.
+    request.setHttpTimeout(30000);
 
     var response = request.execute();
     var status = response.getStatusCode();
     if (status < 200 || status >= 300) {
-      // Log the status only: bodies can echo the user's query.
-      gs.error('otto-search: Claude API returned HTTP ' + status);
+      // Log the status and Anthropic's error.type only: bodies can echo the
+      // user's query.
+      gs.error(
+        'otto-search: Claude API returned HTTP ' +
+          status +
+          ' (' +
+          errorType(response.getBody()) +
+          ')'
+      );
       data.isError = true;
-      data.errorCode =
-        status === 401 || status === 403 ? 'unauthorized' : 'api_error';
+      if (status === 401 || status === 403) {
+        data.errorCode = 'unauthorized';
+      } else if (status === 429) {
+        data.errorCode = 'rate_limited';
+      } else {
+        data.errorCode = 'api_error';
+      }
       return;
     }
 
@@ -90,6 +107,12 @@ export default function server(data, _options, input) {
         MAX_SUGGESTIONS,
         MAX_SUGGESTION_CHARS
       );
+    } else if (json.stop_reason === 'max_tokens') {
+      // The reply was cut off mid-JSON. Showing the fragment would look broken.
+      gs.error('otto-search: Claude reply was cut off at max_tokens');
+      data.isError = true;
+      data.errorCode = 'api_error';
+      return;
     } else {
       // Not valid JSON: show the raw text, offer no suggestions.
       data.answer = text.trim();
@@ -103,6 +126,17 @@ export default function server(data, _options, input) {
     gs.error('otto-search: request failed: ' + e.message);
     data.isError = true;
     data.errorCode = 'api_error';
+  }
+
+  // Returns Anthropic's error.type (for example rate_limit_error) or 'unknown'.
+  // Only this short type is logged, never the body.
+  function errorType(body) {
+    try {
+      var t = JSON.parse(body).error.type;
+      return typeof t === 'string' ? t.slice(0, 60) : 'unknown';
+    } catch (e) {
+      return 'unknown';
+    }
   }
 
   // Returns {answer, suggestions} or null. Tolerates code fences and prose

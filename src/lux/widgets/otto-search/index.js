@@ -82,6 +82,10 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
         return i18n.getMessage(
           'Claude rejected the API key. Ask an administrator to check it.'
         );
+      case 'rate_limited':
+        return i18n.getMessage(
+          'Otto is busy right now. Please try again in a moment.'
+        );
       case 'bad_request':
         return i18n.getMessage('That question could not be sent. Please try again.');
       default:
