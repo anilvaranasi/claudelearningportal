@@ -6,9 +6,11 @@ on:
     branches: [nowdev]
   workflow_dispatch:
 
+# false: a newer push waits instead of killing a `now-sdk install` midway, which
+# could leave DEV partly installed. GitHub keeps only the newest pending run.
 concurrency:
   group: nowdev-pipeline
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
