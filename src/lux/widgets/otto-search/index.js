@@ -14,7 +14,7 @@ const MAX_QUERY_CHARS = 1000;
 @customElement('aiux-otto-search')
 @name('Otto Search')
 @description('"Ask Otto" search bar. Shows a short Claude answer and follow-up prompts in a dialog. Calls Claude through a server script so the API key stays on the instance.')
-@bestFor('Letting users ask a quick question and continue the topic in the chat card.')
+@bestFor('Letting users ask a quick question about Claude and explore follow-up questions.')
 @chatCompatible(false)
 @category('custom')
 @server('./server-script.js')
@@ -135,19 +135,16 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
   }
 
   // Closing invalidates any in-flight search, so a late answer cannot reopen
-  // anything. Focus goes back to the search box unless the caller is handing
-  // focus to the chat card.
-  async _close({restoreFocus = true} = {}) {
+  // anything. Focus returns to the search box.
+  async _close() {
     this._requestId++;
     this._open = false;
     if (this._status === 'loading') {
       this._status = 'idle';
     }
-    if (restoreFocus) {
-      // Removing an open modal does not restore focus; do it after the update.
-      await this.updateComplete;
-      this._focusInput();
-    }
+    // Removing an open modal does not restore focus; do it after the update.
+    await this.updateComplete;
+    this._focusInput();
   }
 
   _onModalClose(e) {
@@ -156,78 +153,74 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
     this._close();
   }
 
-  _continueInChat(text) {
-    this.dispatchEvent(
-      new CustomEvent('otto-search:continue-in-chat', {
-        detail: {text},
-        bubbles: true,
-        composed: true
-      })
-    );
-    // The page moves focus to the chat input, so do not pull it back here.
-    this._close({restoreFocus: false});
+  // A follow-up suggestion runs as a new search inside the open dialog.
+  _askSuggestion(text) {
+    this._query = text;
+    this._search();
   }
 
   _renderSearchBar() {
     const examples = [
-      i18n.getMessage('What is prompt engineering?'),
-      i18n.getMessage('How do I write a good system prompt?'),
-      i18n.getMessage('What can Claude do with images?')
+      i18n.getMessage('Analyze a document'),
+      i18n.getMessage('Try tool use'),
+      i18n.getMessage('Describe an image')
     ];
     return html`
       <form
         role="search"
-        class="flex flex-col gap-3"
+        class="flex flex-col gap-4"
         aria-label=${i18n.getMessage('Ask Otto')}
         @submit=${this._onSubmit}
       >
         <label for="otto-query" class="sr-only">
           ${i18n.getMessage('Ask Otto a question')}
         </label>
-        <div class="flex gap-2">
-          <label class="aiux-input flex min-w-0 flex-1 items-center gap-2">
-            ${icon({name: 'magnifying-glass', size: 'sm'})}
-            <input
-              id="otto-query"
-              type="search"
-              class="min-w-0 grow"
-              maxlength=${MAX_QUERY_CHARS}
-              autocomplete="off"
-              placeholder=${i18n.getMessage('Ask Otto anything about Claude...')}
-              .value=${this._query}
-              @input=${this._onInput}
-            />
-          </label>
+        <div
+          class="flex items-center gap-3 rounded-box border border-base-300 bg-base-100 p-2 pl-5 shadow-md focus-within:border-primary focus-within:ring-2 focus-within:ring-primary"
+        >
+          <span class="shrink-0 text-text-tertiary">
+            ${icon({name: 'magnifying-glass', size: 'md'})}
+          </span>
+          <input
+            id="otto-query"
+            type="search"
+            class="min-w-0 flex-1 bg-transparent py-3 text-base text-base-content outline-none"
+            maxlength=${MAX_QUERY_CHARS}
+            autocomplete="off"
+            placeholder=${i18n.getMessage(
+              'Search capabilities or describe what you want to build'
+            )}
+            .value=${this._query}
+            @input=${this._onInput}
+          />
           <button
             type="submit"
-            class="aiux-btn aiux-btn-primary"
+            class="aiux-btn aiux-btn-primary shrink-0"
+            aria-label=${i18n.getMessage('Search')}
             ?disabled=${!this._query.trim() || this._status === 'loading'}
           >
-            ${icon({name: 'ai-sparkle', size: 'sm'})}
-            ${i18n.getMessage('Ask Otto')}
+            ${icon({name: 'send', size: 'sm'})}
           </button>
         </div>
-        <div class="flex flex-col gap-2">
-          <p class="text-xs text-text-tertiary">
-            ${i18n.getMessage('Try one of these, or type your own question.')}
-          </p>
-          <ul class="flex flex-wrap gap-2">
-            ${examples.map(
-              (example) => html`
-                <li>
-                  <button
-                    type="button"
-                    class="aiux-btn aiux-btn-outline aiux-btn-sm"
-                    ?disabled=${this._status === 'loading'}
-                    @click=${() => this._onExample(example)}
-                  >
-                    ${example}
-                  </button>
-                </li>
-              `
-            )}
-          </ul>
-        </div>
+        <ul
+          class="flex flex-wrap justify-center gap-x-5 gap-y-2"
+          aria-label=${i18n.getMessage('Example searches')}
+        >
+          ${examples.map(
+            (example) => html`
+              <li>
+                <button
+                  type="button"
+                  class="text-xs font-medium text-text-secondary transition-colors hover:text-text-primary disabled:opacity-50 motion-reduce:transition-none"
+                  ?disabled=${this._status === 'loading'}
+                  @click=${() => this._onExample(example)}
+                >
+                  ${example}
+                </button>
+              </li>
+            `
+          )}
+        </ul>
       </form>
     `;
   }
@@ -278,9 +271,9 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
                     <button
                       type="button"
                       class="aiux-btn aiux-btn-sm aiux-btn-outline shrink-0"
-                      @click=${() => this._continueInChat(text)}
+                      @click=${() => this._askSuggestion(text)}
                     >
-                      ${i18n.getMessage('Continue in chat')}
+                      ${i18n.getMessage('Ask this')}
                       ${icon({name: 'arrow-right', size: 'xs'})}
                     </button>
                   </li>

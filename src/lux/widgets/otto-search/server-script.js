@@ -18,7 +18,8 @@ export default function server(data, _options, input) {
     'Answer the user question in 2 to 4 sentences. Then suggest up to 3 short ' +
     'follow-up prompts the user could ask next. ' +
     'Respond with JSON only, no markdown and no code fences, in exactly this ' +
-    'shape: {"answer": string, "suggestions": string[]}';
+    'shape: {"answer": string, "suggestions": string[]}. ' +
+    'Write the answer and each suggestion as plain text with no markdown or asterisks.';
 
   var query = typeof input.query === 'string' ? input.query.trim() : '';
   if (!query) {

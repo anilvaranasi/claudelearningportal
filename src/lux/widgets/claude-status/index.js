@@ -5,14 +5,13 @@ import {
   decorators
 } from '@servicenow/aiux/aiux-components-core';
 import {i18n} from '@servicenow/aiux/aiux-services';
-import {icon} from '@servicenow/aiux/aiux-directive-icon';
 const {name, description, bestFor, chatCompatible, category, server, discoverable} =
   decorators;
 
 @customElement('aiux-claude-status')
 @name('Claude Status')
 @description('Shows whether the Claude API key is configured on this instance, and which model is used.')
-@bestFor('Letting users and admins see at a glance whether the Claude integration is ready.')
+@bestFor('Letting users and admins see at a glance whether the Claude integration is set up.')
 @chatCompatible(false)
 @category('custom')
 @server('./server-script.js')
@@ -25,35 +24,25 @@ export default class ClaudeStatusWidget extends AIUXWidgetElement {
   `;
 
   render() {
+    // This reports configuration only. It does not call the API, so it cannot
+    // say the key is valid or the gateway reachable.
     const configured = !!this.data?.configured;
     const model = this.data?.model || '';
     return html`
       <section
-        class="rounded-box bg-primary p-6 text-primary-content"
+        class="border-l-2 border-accent pl-6"
         aria-label=${i18n.getMessage('Claude integration status')}
       >
-        <div class="flex items-start justify-between gap-3">
-          <div
-            class="flex h-11 w-11 items-center justify-center rounded-box bg-base-100 text-primary"
-          >
-            ${icon({name: configured ? 'circle-check' : 'circle-info', size: 'md'})}
-          </div>
+        <p class="flex items-center gap-2 text-sm font-semibold text-text-primary">
           <span
-            class="aiux-badge aiux-badge-soft aiux-badge-sm ${configured
-              ? 'aiux-badge-success'
-              : 'aiux-badge-warning'}"
-          >
-            ${configured
-              ? i18n.getMessage('Connected')
-              : i18n.getMessage('Not configured')}
-          </span>
-        </div>
-        <h3 class="mt-8 font-serif text-xl font-semibold">
+            class="h-2 w-2 rounded-full ${configured ? 'bg-accent' : 'bg-warning'}"
+            aria-hidden="true"
+          ></span>
           ${configured
-            ? i18n.getMessage('Claude API is ready')
+            ? i18n.getMessage('Claude API key configured')
             : i18n.getMessage('Claude API is not configured')}
-        </h3>
-        <p class="mt-2 text-sm opacity-80">
+        </p>
+        <p class="mt-3 text-sm text-text-secondary">
           ${configured
             ? i18n.getMessage('Model: {0}', [model])
             : i18n.getMessage(
