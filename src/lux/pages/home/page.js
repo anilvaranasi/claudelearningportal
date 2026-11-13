@@ -13,6 +13,10 @@ export default class HomePage extends AIUXElement {
   static styles = css`
     :host {
       display: block;
+      /* Tailwind's font-serif reads this variable and nothing else defines it.
+         A system serif stack avoids an external font request. It is inherited by
+         the widgets rendered inside this page. */
+      --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
     }
   `;
 
@@ -23,7 +27,7 @@ export default class HomePage extends AIUXElement {
     return [
       {
         icon: 'chat',
-        tint: 'bg-success/15 text-success',
+        tint: 'bg-base-200 text-success',
         title: i18n.getMessage('Chat & generation'),
         detail: i18n.getMessage('Test prompts and system instructions'),
         prompt: i18n.getMessage(
@@ -32,7 +36,7 @@ export default class HomePage extends AIUXElement {
       },
       {
         icon: 'book-open',
-        tint: 'bg-secondary/15 text-secondary',
+        tint: 'bg-base-200 text-text-primary',
         title: i18n.getMessage('Document analysis'),
         detail: i18n.getMessage('Summarize and extract from pasted text'),
         prompt: i18n.getMessage(
@@ -41,7 +45,7 @@ export default class HomePage extends AIUXElement {
       },
       {
         icon: 'laptop',
-        tint: 'bg-warning/15 text-warning',
+        tint: 'bg-base-200 text-warning',
         title: i18n.getMessage('Tool use'),
         detail: i18n.getMessage('Connect functions and workflows'),
         prompt: i18n.getMessage(
@@ -50,7 +54,7 @@ export default class HomePage extends AIUXElement {
       },
       {
         icon: 'shield-check',
-        tint: 'bg-info/15 text-info',
+        tint: 'bg-base-200 text-info',
         title: i18n.getMessage('Vision'),
         detail: i18n.getMessage('Learn what Claude can do with images'),
         prompt: i18n.getMessage(
@@ -69,10 +73,10 @@ export default class HomePage extends AIUXElement {
       <section class="relative overflow-hidden rounded-box bg-primary text-primary-content">
         <!-- Decorative mint panel and stripe behind the Otto card (desktop only) -->
         <div
-          class="absolute inset-y-0 right-0 hidden w-1/2 bg-success/15 lg:block"
+          class="absolute inset-y-0 right-0 hidden w-1/2 bg-base-200 lg:block"
           aria-hidden="true"
         >
-          <div class="absolute inset-y-0 -left-6 w-14 -skew-x-12 bg-success/60"></div>
+          <div class="absolute inset-y-0 -left-6 w-14 -skew-x-12 bg-success"></div>
         </div>
         <div
           class="relative grid grid-cols-1 items-center gap-8 p-6 lg:grid-cols-2 lg:p-12"
@@ -84,7 +88,7 @@ export default class HomePage extends AIUXElement {
               ${icon({name: 'ai-sparkle', size: 'sm'})}
               ${i18n.getMessage('Claude integration workspace')}
             </p>
-            <h1 class="font-serif text-4xl font-bold leading-tight lg:text-6xl">
+            <h1 class="font-serif text-4xl font-medium leading-tight tracking-tight lg:text-6xl">
               ${i18n.getMessage('Explore what Claude can do.')}
             </h1>
             <p class="max-w-md text-lg opacity-80">
@@ -107,7 +111,7 @@ export default class HomePage extends AIUXElement {
         </p>
         <h2
           id="capabilities-heading"
-          class="mb-6 font-serif text-3xl font-bold text-text-primary"
+          class="mb-6 font-serif text-3xl font-medium tracking-tight text-text-primary"
         >
           ${i18n.getMessage('Choose a feature to try')}
         </h2>
@@ -127,7 +131,7 @@ export default class HomePage extends AIUXElement {
                   >
                     ${icon({name: item.icon, size: 'md'})}
                   </span>
-                  <span class="font-serif text-lg font-bold text-text-primary">
+                  <span class="font-serif text-lg font-semibold text-text-primary">
                     ${item.title}
                   </span>
                   <span class="text-sm text-text-secondary">${item.detail}</span>

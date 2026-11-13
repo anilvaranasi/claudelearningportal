@@ -34,7 +34,7 @@ export default class ClaudeStatusWidget extends AIUXWidgetElement {
       >
         <div class="flex items-start justify-between gap-3">
           <div
-            class="flex h-11 w-11 items-center justify-center rounded-box bg-primary-content/10"
+            class="flex h-11 w-11 items-center justify-center rounded-box bg-base-100 text-primary"
           >
             ${icon({name: configured ? 'circle-check' : 'circle-info', size: 'md'})}
           </div>
@@ -48,7 +48,7 @@ export default class ClaudeStatusWidget extends AIUXWidgetElement {
               : i18n.getMessage('Not configured')}
           </span>
         </div>
-        <h3 class="mt-8 font-serif text-xl font-bold">
+        <h3 class="mt-8 font-serif text-xl font-semibold">
           ${configured
             ? i18n.getMessage('Claude API is ready')
             : i18n.getMessage('Claude API is not configured')}

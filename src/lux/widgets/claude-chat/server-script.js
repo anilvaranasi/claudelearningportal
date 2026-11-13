@@ -15,7 +15,9 @@ export default function server(data, _options, input) {
   var MAX_CHARS = 8000;
   var SYSTEM_PROMPT =
     'You are Claude, an assistant inside the Claude Learning Portal on ServiceNow. ' +
-    'Help the user learn about Claude and AI. Be clear and concise.';
+    'Help the user learn about Claude and AI. Be clear and concise. ' +
+    'Reply in plain text only: no markdown, no asterisks, no headings and no ' +
+    'code fences, because the chat shows your reply as plain text.';
 
   var apiKey = gs.getProperty('x_ibmin_claudel.claude_api_key', '');
   if (!apiKey) {

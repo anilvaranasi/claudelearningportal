@@ -126,11 +126,30 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
   updated(changed) {
     if (isServer) return;
     if (changed.has('_messages') || changed.has('_sending')) {
-      this.renderRoot.querySelector('#thread-end')?.scrollIntoView({block: 'nearest'});
+      this._scrollThread();
     }
     if (changed.has('_sending') && !this._sending) {
       this.renderRoot.querySelector('#prompt')?.focus();
     }
+  }
+
+  // Scroll only the thread box, never the page. A new reply is shown from its
+  // first line so a long answer is not cut off at the top; everything else
+  // (your message, the loading skeleton) scrolls to the bottom.
+  _scrollThread() {
+    const thread = this.renderRoot.querySelector('#thread');
+    if (!thread) return;
+    const last = this._messages[this._messages.length - 1];
+    if (!this._sending && last?.role === 'assistant') {
+      const replies = thread.querySelectorAll('li[data-role="assistant"]');
+      const reply = replies[replies.length - 1];
+      if (reply) {
+        thread.scrollTop +=
+          reply.getBoundingClientRect().top - thread.getBoundingClientRect().top;
+        return;
+      }
+    }
+    thread.scrollTop = thread.scrollHeight;
   }
 
   _renderHeader() {
@@ -175,7 +194,10 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
   _renderMessage(message) {
     const isUser = message.role === 'user';
     return html`
-      <li class="aiux-chat ${isUser ? 'aiux-chat-end' : 'aiux-chat-start'}">
+      <li
+        class="aiux-chat ${isUser ? 'aiux-chat-end' : 'aiux-chat-start'}"
+        data-role=${message.role}
+      >
         <div class="aiux-chat-header text-xs text-text-tertiary">
           ${isUser ? i18n.getMessage('You') : i18n.getMessage('Claude')}
         </div>
@@ -183,9 +205,7 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
           class="aiux-chat-bubble whitespace-pre-wrap break-words ${isUser
             ? 'aiux-chat-bubble-primary'
             : ''}"
-        >
-          ${message.content}
-        </div>
+        >${message.content}</div>
       </li>
     `;
   }
@@ -193,6 +213,7 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
   _renderThread() {
     return html`
       <ul
+        id="thread"
         class="flex max-h-96 min-h-40 flex-col gap-2 overflow-y-auto px-5 py-4"
         role="log"
         aria-live="polite"
@@ -221,7 +242,6 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
               </li>
             `
           : nothing}
-        <li id="thread-end" aria-hidden="true"></li>
       </ul>
     `;
   }
