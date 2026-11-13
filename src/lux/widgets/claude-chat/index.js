@@ -18,10 +18,6 @@ const {name, description, bestFor, chatCompatible, category, server, discoverabl
 @server('./server-script.js')
 @discoverable(true)
 export default class ClaudeChatWidget extends AIUXWidgetElement {
-  // The server script only answers explicit chat actions, so skip the
-  // automatic fetch when the widget connects.
-  static fetchDataOnConnect = false;
-
   static properties = {
     _messages: {type: Array, state: true},
     _draft: {type: String, state: true},
@@ -138,19 +134,40 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
   }
 
   _renderHeader() {
+    // The pill reflects real state: ONLINE only when an API key is set.
+    const configured = !!this.data?.configured;
     return html`
       <div class="flex items-center gap-3 border-b border-base-300 px-5 py-4">
-        <div
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-content"
-        >
-          ${icon({name: 'bot', size: 'md'})}
+        <div class="relative">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-content"
+          >
+            ${icon({name: 'bot', size: 'md'})}
+          </div>
+          ${configured
+            ? html`<span
+                class="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-base-100 bg-success"
+                aria-hidden="true"
+              ></span>`
+            : nothing}
         </div>
-        <div>
-          <p class="font-semibold text-text-primary">${i18n.getMessage('Otto')}</p>
+        <div class="min-w-0 flex-1">
+          <p class="font-semibold text-text-primary">
+            ${i18n.getMessage('Otto Search')}
+          </p>
           <p class="text-xs text-text-tertiary">
-            ${i18n.getMessage('Your Claude assistant')}
+            ${i18n.getMessage('Claude capability navigator')}
           </p>
         </div>
+        <span
+          class="aiux-badge aiux-badge-soft aiux-badge-sm ${configured
+            ? 'aiux-badge-success'
+            : 'aiux-badge-warning'}"
+        >
+          ${configured
+            ? i18n.getMessage('Online')
+            : i18n.getMessage('Not configured')}
+        </span>
       </div>
     `;
   }
@@ -176,7 +193,7 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
   _renderThread() {
     return html`
       <ul
-        class="flex max-h-96 min-h-56 flex-col gap-2 overflow-y-auto px-5 py-4"
+        class="flex max-h-96 min-h-40 flex-col gap-2 overflow-y-auto px-5 py-4"
         role="log"
         aria-live="polite"
         aria-label=${i18n.getMessage('Conversation with Claude')}
@@ -184,7 +201,7 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
         <li class="aiux-chat aiux-chat-start">
           <div class="aiux-chat-bubble">
             ${i18n.getMessage(
-              'Tell me what you want to try. I can answer questions, explain ideas and help you draft prompts.'
+              'Tell me what you want to try. I can answer questions, explain ideas, and help you draft prompts to run as experiments.'
             )}
           </div>
         </li>
@@ -209,11 +226,28 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
     `;
   }
 
+  // Each chip puts a starter prompt in the box for the user to edit and send.
+  // Only text prompts: nothing here uploads a file or image.
   _renderChips() {
     const chips = [
-      i18n.getMessage('What can Claude help me with?'),
-      i18n.getMessage('Explain prompt engineering in simple terms'),
-      i18n.getMessage('Give me three tips for writing better prompts')
+      {
+        label: i18n.getMessage('Summarize a document'),
+        prompt: i18n.getMessage(
+          'Summarize the following text in three bullet points:\n\n'
+        )
+      },
+      {
+        label: i18n.getMessage('Analyze an image'),
+        prompt: i18n.getMessage(
+          'What kinds of image tasks can Claude help with, and how should I describe them in a prompt?'
+        )
+      },
+      {
+        label: i18n.getMessage('Try a tool-use workflow'),
+        prompt: i18n.getMessage(
+          'Explain how Claude can call tools and functions, with a simple example.'
+        )
+      }
     ];
     return html`
       <ul class="flex flex-wrap gap-2 px-5 pb-4">
@@ -222,11 +256,11 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
             <li>
               <button
                 type="button"
-                class="aiux-btn aiux-btn-outline aiux-btn-sm"
+                class="aiux-btn aiux-btn-outline aiux-btn-sm rounded-full"
                 ?disabled=${this._sending}
-                @click=${() => this._send(chip)}
+                @click=${() => this.setDraft(chip.prompt)}
               >
-                ${chip}
+                ${chip.label}
               </button>
             </li>
           `
@@ -261,11 +295,16 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
         <label for="prompt" class="sr-only">
           ${i18n.getMessage('Message Claude')}
         </label>
-        <div class="flex items-end gap-2">
+        <div
+          class="flex items-center gap-2 rounded-3xl border border-primary bg-base-100 py-2 pr-2 pl-4 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+        >
+          <span class="shrink-0 text-text-tertiary">
+            ${icon({name: 'magnifying-glass', size: 'sm'})}
+          </span>
           <textarea
             id="prompt"
-            class="aiux-textarea min-w-0 flex-1"
-            rows="2"
+            class="max-h-40 min-w-0 flex-1 resize-none bg-transparent text-base-content outline-none"
+            rows="1"
             maxlength="8000"
             placeholder=${i18n.getMessage(
               'Search Claude capabilities or describe what you want to build...'
@@ -277,11 +316,11 @@ export default class ClaudeChatWidget extends AIUXWidgetElement {
           ></textarea>
           <button
             type="submit"
-            class="aiux-btn aiux-btn-primary"
+            class="aiux-btn aiux-btn-primary shrink-0 rounded-full"
             aria-label=${i18n.getMessage('Send message')}
             ?disabled=${this._sending || !this._draft.trim()}
           >
-            ${icon({name: 'arrow-right', size: 'sm'})}
+            ${icon({name: 'send', size: 'sm'})}
           </button>
         </div>
         <p class="text-xs text-text-tertiary">

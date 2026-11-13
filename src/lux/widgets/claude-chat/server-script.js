@@ -4,7 +4,10 @@
 // On failure the script returns data.errorCode; the widget maps it to a
 // translated message, so no user-facing English is built here.
 export default function server(data, _options, input) {
+  // Default load: report only whether a key is set, for the card's status
+  // pill. The key itself never goes to the client.
   if (!input || input.action !== 'chat') {
+    data.configured = !!gs.getProperty('x_ibmin_claudel.claude_api_key', '');
     return;
   }
 

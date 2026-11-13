@@ -4,7 +4,7 @@ import {AIUXElement} from '@servicenow/aiux/aiux-components-core';
 import {i18n} from '@servicenow/aiux/aiux-services';
 import {icon} from '@servicenow/aiux/aiux-directive-icon';
 import '../../widgets/claude-chat/index.js';
-import '../../widgets/otto-search/index.js';
+import '../../widgets/claude-status/index.js';
 
 @customElement('x-ibmin-claudel-home-page')
 export default class HomePage extends AIUXElement {
@@ -17,11 +17,13 @@ export default class HomePage extends AIUXElement {
   `;
 
   // Each tile puts a starter prompt in the chat box. Only text prompts are
-  // offered: the API integration does not take file or image uploads yet.
+  // offered: the API integration does not take file or image uploads yet, so
+  // the copy says what actually works.
   _capabilities() {
     return [
       {
         icon: 'chat',
+        tint: 'bg-success/15 text-success',
         title: i18n.getMessage('Chat & generation'),
         detail: i18n.getMessage('Test prompts and system instructions'),
         prompt: i18n.getMessage(
@@ -29,7 +31,8 @@ export default class HomePage extends AIUXElement {
         )
       },
       {
-        icon: 'document',
+        icon: 'book-open',
+        tint: 'bg-secondary/15 text-secondary',
         title: i18n.getMessage('Document analysis'),
         detail: i18n.getMessage('Summarize and extract from pasted text'),
         prompt: i18n.getMessage(
@@ -37,15 +40,17 @@ export default class HomePage extends AIUXElement {
         )
       },
       {
-        icon: 'workflow',
+        icon: 'laptop',
+        tint: 'bg-warning/15 text-warning',
         title: i18n.getMessage('Tool use'),
-        detail: i18n.getMessage('Learn how functions and workflows connect'),
+        detail: i18n.getMessage('Connect functions and workflows'),
         prompt: i18n.getMessage(
           'Explain how Claude can call tools and functions, with a simple example.'
         )
       },
       {
-        icon: 'image',
+        icon: 'shield-check',
+        tint: 'bg-info/15 text-info',
         title: i18n.getMessage('Vision'),
         detail: i18n.getMessage('Learn what Claude can do with images'),
         prompt: i18n.getMessage(
@@ -59,26 +64,32 @@ export default class HomePage extends AIUXElement {
     this.renderRoot.querySelector('aiux-claude-chat')?.setDraft(prompt);
   }
 
-  // A suggestion from the Otto search dialog: fill the chat box, never send.
-  _onContinueInChat(e) {
-    this._useStarter(e.detail?.text || '');
-  }
-
   _renderHero() {
     return html`
-      <section class="rounded-box bg-primary text-primary-content">
-        <div class="grid grid-cols-1 items-center gap-8 p-6 lg:grid-cols-2 lg:p-12">
+      <section class="relative overflow-hidden rounded-box bg-primary text-primary-content">
+        <!-- Decorative mint panel and stripe behind the Otto card (desktop only) -->
+        <div
+          class="absolute inset-y-0 right-0 hidden w-1/2 bg-success/15 lg:block"
+          aria-hidden="true"
+        >
+          <div class="absolute inset-y-0 -left-6 w-14 -skew-x-12 bg-success/60"></div>
+        </div>
+        <div
+          class="relative grid grid-cols-1 items-center gap-8 p-6 lg:grid-cols-2 lg:p-12"
+        >
           <div class="flex flex-col gap-4">
-            <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
+            <p
+              class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-success"
+            >
               ${icon({name: 'ai-sparkle', size: 'sm'})}
               ${i18n.getMessage('Claude integration workspace')}
             </p>
-            <h1 class="text-4xl font-bold leading-tight lg:text-5xl">
+            <h1 class="font-serif text-4xl font-bold leading-tight lg:text-6xl">
               ${i18n.getMessage('Explore what Claude can do.')}
             </h1>
             <p class="max-w-md text-lg opacity-80">
               ${i18n.getMessage(
-                'Try Claude in a guided playground, read the answers, and learn what to build next.'
+                'Try every capability in a guided playground, inspect the output, and turn successful experiments into integrations.'
               )}
             </p>
           </div>
@@ -88,43 +99,38 @@ export default class HomePage extends AIUXElement {
     `;
   }
 
-  _renderSearch() {
-    return html`
-      <section class="mt-10" aria-label=${i18n.getMessage('Ask Otto')}>
-        <aiux-otto-search
-          @otto-search:continue-in-chat=${this._onContinueInChat}
-        ></aiux-otto-search>
-      </section>
-    `;
-  }
-
   _renderCapabilities() {
     return html`
       <section class="mt-10" aria-labelledby="capabilities-heading">
-        <p class="mb-1 text-xs font-bold uppercase tracking-widest text-text-tertiary">
+        <p class="mb-1 text-xs font-bold uppercase tracking-widest text-primary">
           ${i18n.getMessage('Capability playground')}
         </p>
-        <h2 id="capabilities-heading" class="mb-6 text-3xl font-bold text-text-primary">
+        <h2
+          id="capabilities-heading"
+          class="mb-6 font-serif text-3xl font-bold text-text-primary"
+        >
           ${i18n.getMessage('Choose a feature to try')}
         </h2>
-        <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul
+          class="grid grid-cols-1 divide-y divide-base-300 overflow-hidden rounded-box border border-base-300 bg-base-100 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x"
+        >
           ${this._capabilities().map(
             (item) => html`
-              <li class="h-full">
+              <li>
                 <button
                   type="button"
-                  class="aiux-card h-full w-full bg-base-100 text-left transition-colors hover:bg-base-200 motion-reduce:transition-none"
+                  class="flex h-full w-full flex-col gap-3 p-6 text-left transition-colors hover:bg-base-200 motion-reduce:transition-none"
                   @click=${() => this._useStarter(item.prompt)}
                 >
-                  <span class="aiux-card-body">
-                    <span
-                      class="mb-4 flex h-12 w-12 items-center justify-center rounded-box bg-base-200 text-text-primary"
-                    >
-                      ${icon({name: item.icon, size: 'md'})}
-                    </span>
-                    <span class="aiux-card-title text-text-primary">${item.title}</span>
-                    <span class="text-sm text-text-secondary">${item.detail}</span>
+                  <span
+                    class="mb-4 flex h-12 w-12 items-center justify-center rounded-box ${item.tint}"
+                  >
+                    ${icon({name: item.icon, size: 'md'})}
                   </span>
+                  <span class="font-serif text-lg font-bold text-text-primary">
+                    ${item.title}
+                  </span>
+                  <span class="text-sm text-text-secondary">${item.detail}</span>
                 </button>
               </li>
             `
@@ -134,11 +140,27 @@ export default class HomePage extends AIUXElement {
     `;
   }
 
+  _renderStatus() {
+    return html`
+      <section class="mt-10" aria-labelledby="status-heading">
+        <h2
+          id="status-heading"
+          class="mb-3 text-xs font-bold uppercase tracking-widest text-primary"
+        >
+          ${i18n.getMessage('Integration status')}
+        </h2>
+        <div class="max-w-md">
+          <aiux-claude-status></aiux-claude-status>
+        </div>
+      </section>
+    `;
+  }
+
   render() {
     return html`
       <div class="mx-auto max-w-6xl">
-        ${this._renderHero()} ${this._renderSearch()}
-        ${this._renderCapabilities()}
+        ${this._renderHero()} ${this._renderCapabilities()}
+        ${this._renderStatus()}
       </div>
     `;
   }

@@ -1,5 +1,5 @@
 export const AppTheme = {
-  primary_color: '#032D42',
+  primary_color: '#0B3025',
   neutral_colors: {
     use_hex_value: true,
     hex_value: '#F8F7F4'
