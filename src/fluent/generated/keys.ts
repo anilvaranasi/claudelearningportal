@@ -52,6 +52,7 @@ declare global {
                     'aiux-widget|aiux-claude-chat': {
                         table: 'sys_aix_widget'
                         id: 'c4de90a499da85f335116522bc0fd3db'
+                        deleted: true
                     }
                     'aiux-widget|aiux-claude-status': {
                         table: 'sys_aix_widget'
@@ -60,6 +61,7 @@ declare global {
                     'aiux-widget|aiux-hello-world': {
                         table: 'sys_aix_widget'
                         id: '0ee2ca2013c2b62f87576048ae7e2d5d'
+                        deleted: true
                     }
                     'aiux-widget|aiux-otto-search': {
                         table: 'sys_aix_widget'
