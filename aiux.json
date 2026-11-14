@@ -4,6 +4,10 @@
   "basename": "claudelearningportal",
   "srcDir": "src/lux",
   "landing": "/home",
+  "experienceAcls": [
+    {"decision": "allow_if", "securityAttribute": "has_admin_role", "id": "app-admin"},
+    {"decision": "allow_if", "roles": ["aix_experience_admin"], "id": "app-experience-admin"}
+  ],
   "createAnalyticsApp": true,
   "development": {
     "token": ""

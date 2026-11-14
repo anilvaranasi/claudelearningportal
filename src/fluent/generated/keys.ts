@@ -5,6 +5,30 @@ declare global {
         namespace Internal {
             interface Keys extends KeysRegistry {
                 explicit: {
+                    'aiux-acl|aiux-claude-status|read|status-admin': {
+                        table: 'sys_security_acl'
+                        id: 'b6a252b903e84d3496908f038cc4b76b'
+                    }
+                    'aiux-acl|aiux-claude-status|read|status-experience-admin': {
+                        table: 'sys_security_acl'
+                        id: '31d50bcbd89f44b0ad0ad3f3e0d08dce'
+                    }
+                    'aiux-acl|aiux-otto-search|read|search-admin': {
+                        table: 'sys_security_acl'
+                        id: '66b4475ed4904e229c4c21d23416d619'
+                    }
+                    'aiux-acl|aiux-otto-search|read|search-experience-admin': {
+                        table: 'sys_security_acl'
+                        id: 'c35d2faf8d2046f3945013964d2272d5'
+                    }
+                    'aiux-acl|experience:claudelearningportal|read|app-admin': {
+                        table: 'sys_security_acl'
+                        id: '49a93f7bdb304e46b9fd937a662f22ee'
+                    }
+                    'aiux-acl|experience:claudelearningportal|read|app-experience-admin': {
+                        table: 'sys_security_acl'
+                        id: '10f1477d76ab4c6188e8f11c273da1c9'
+                    }
                     'aiux-color-swatch|claudelearningportal': {
                         table: 'sys_aix_color_swatch'
                         id: 'c22a35e72ef179c93ecd06fe7c7b02f1'
@@ -67,6 +91,10 @@ declare global {
                         table: 'sys_aix_widget'
                         id: '62b0d8d34bec67078ec245285f7930c8'
                     }
+                    'aiux-widget|aiux-studio-preview': {
+                        table: 'sys_aix_widget'
+                        id: '5e875a31b6068e97735e61ce3a768f42'
+                    }
                     bom_json: {
                         table: 'sys_module'
                         id: '0487ed2a5459482ca86aa1be55552636'
@@ -98,10 +126,49 @@ declare global {
                 }
                 composite: [
                     {
+                        table: 'sys_security_acl_role'
+                        id: '37d00a56ced74b5fa1f63033eb5ccecf'
+                        key: {
+                            sys_security_acl: '10f1477d76ab4c6188e8f11c273da1c9'
+                            sys_user_role: {
+                                id: '67b0d8a78f734035955f867466b0385d'
+                                key: {
+                                    name: 'aix_experience_admin'
+                                }
+                            }
+                        }
+                    },
+                    {
                         table: 'sn_glider_source_artifact'
                         id: '4c66f33eefcf4d0d8e8eae6206effe67'
                         key: {
                             name: 'aiux-source cc1ba035956134867d46987f9abc40fe'
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: '5b1cf7e6deba40e3ba65b185b7343fa4'
+                        key: {
+                            sys_security_acl: '31d50bcbd89f44b0ad0ad3f3e0d08dce'
+                            sys_user_role: {
+                                id: '67b0d8a78f734035955f867466b0385d'
+                                key: {
+                                    name: 'aix_experience_admin'
+                                }
+                            }
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: '5bbf062b591a40b7ba220080d57d6bf2'
+                        key: {
+                            sys_security_acl: 'c35d2faf8d2046f3945013964d2272d5'
+                            sys_user_role: {
+                                id: '67b0d8a78f734035955f867466b0385d'
+                                key: {
+                                    name: 'aix_experience_admin'
+                                }
+                            }
                         }
                     },
                     {

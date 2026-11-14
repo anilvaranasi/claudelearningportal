@@ -6,8 +6,16 @@ import {
 } from '@servicenow/aiux/aiux-components-core';
 import {i18n} from '@servicenow/aiux/aiux-services';
 import {icon} from '@servicenow/aiux/aiux-directive-icon';
-const {name, description, bestFor, chatCompatible, category, server, discoverable} =
-  decorators;
+const {
+  name,
+  description,
+  bestFor,
+  chatCompatible,
+  category,
+  server,
+  discoverable,
+  acl
+} = decorators;
 
 @customElement('aiux-claude-status')
 @name('Claude Status')
@@ -16,6 +24,11 @@ const {name, description, bestFor, chatCompatible, category, server, discoverabl
 @chatCompatible(false)
 @category('custom')
 @server('./server-script.js')
+// Admin only for now: the connection test spends the shared Claude API key.
+@acl([
+  {decision: 'allow_if', securityAttribute: 'has_admin_role', id: 'status-admin'},
+  {decision: 'allow_if', roles: ['aix_experience_admin'], id: 'status-experience-admin'}
+])
 @discoverable(true)
 export default class ClaudeStatusWidget extends AIUXWidgetElement {
   static properties = {
