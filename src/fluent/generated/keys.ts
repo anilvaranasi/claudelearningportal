@@ -29,6 +29,14 @@ declare global {
                         table: 'sys_security_acl'
                         id: '10f1477d76ab4c6188e8f11c273da1c9'
                     }
+                    'aiux-acl|x-ibmin-claudel-home-page|read|home-admin': {
+                        table: 'sys_security_acl'
+                        id: '49a8a64a3cd54ce3ab7ef40ead8e455a'
+                    }
+                    'aiux-acl|x-ibmin-claudel-home-page|read|home-experience-admin': {
+                        table: 'sys_security_acl'
+                        id: 'e4bb8a2f0cce44c9a3b8d9cc1dd044a5'
+                    }
                     'aiux-color-swatch|claudelearningportal': {
                         table: 'sys_aix_color_swatch'
                         id: 'c22a35e72ef179c93ecd06fe7c7b02f1'
@@ -125,6 +133,19 @@ declare global {
                     }
                 }
                 composite: [
+                    {
+                        table: 'sys_security_acl_role'
+                        id: '296551960a654146b3844c63952d23ad'
+                        key: {
+                            sys_security_acl: 'e4bb8a2f0cce44c9a3b8d9cc1dd044a5'
+                            sys_user_role: {
+                                id: '67b0d8a78f734035955f867466b0385d'
+                                key: {
+                                    name: 'aix_experience_admin'
+                                }
+                            }
+                        }
+                    },
                     {
                         table: 'sys_security_acl_role'
                         id: '37d00a56ced74b5fa1f63033eb5ccecf'

@@ -1,11 +1,19 @@
 import {html, css} from 'lit';
 import {customElement} from 'lit/decorators.js';
-import {AIUXElement} from '@servicenow/aiux/aiux-components-core';
+import {AIUXElement, decorators} from '@servicenow/aiux/aiux-components-core';
 import {i18n} from '@servicenow/aiux/aiux-services';
 import {icon} from '@servicenow/aiux/aiux-directive-icon';
 import '../../widgets/otto-search/index.js';
 import '../../widgets/claude-status/index.js';
 
+const {acl} = decorators;
+
+// Admin only for now, matching experienceAcls in aiux.json and the widgets.
+// The argument must be an inline literal (read by static analysis at build time).
+@acl([
+  {decision: 'allow_if', securityAttribute: 'has_admin_role', id: 'home-admin'},
+  {decision: 'allow_if', roles: ['aix_experience_admin'], id: 'home-experience-admin'}
+])
 @customElement('x-ibmin-claudel-home-page')
 export default class HomePage extends AIUXElement {
   // Layout, color, and spacing all come from DaisyUI components + Tailwind
