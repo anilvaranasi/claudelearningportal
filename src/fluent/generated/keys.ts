@@ -111,10 +111,6 @@ declare global {
                         table: 'sys_aix_widget'
                         id: '62b0d8d34bec67078ec245285f7930c8'
                     }
-                    'aiux-widget|aiux-studio-preview': {
-                        table: 'sys_aix_widget'
-                        id: '5e875a31b6068e97735e61ce3a768f42'
-                    }
                     bom_json: {
                         table: 'sys_module'
                         id: '0487ed2a5459482ca86aa1be55552636'
