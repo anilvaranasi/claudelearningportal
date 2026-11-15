@@ -8,11 +8,12 @@ import '../../widgets/claude-status/index.js';
 
 const {acl} = decorators;
 
-// Admin only for now, matching experienceAcls in aiux.json and the widgets.
+// Admins and learners (x_ibmin_claudel.user), matching experienceAcls in aiux.json.
 // The argument must be an inline literal (read by static analysis at build time).
 @acl([
   {decision: 'allow_if', securityAttribute: 'has_admin_role', id: 'home-admin'},
-  {decision: 'allow_if', roles: ['aix_experience_admin'], id: 'home-experience-admin'}
+  {decision: 'allow_if', roles: ['aix_experience_admin'], id: 'home-experience-admin'},
+  {decision: 'allow_if', roles: ['x_ibmin_claudel.user'], id: 'home-user'}
 ])
 @customElement('x-ibmin-claudel-home-page')
 export default class HomePage extends AIUXElement {

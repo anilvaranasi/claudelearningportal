@@ -26,11 +26,13 @@ const MAX_QUERY_CHARS = 1000;
 @chatCompatible(false)
 @category('custom')
 @server('./server-script.js')
-// Admin only for now: the server script spends the shared Claude API key.
+// Admins and learners (x_ibmin_claudel.user): the server script spends the shared
+// Claude API key, so only people granted the role can run a search.
 // The argument must be an inline literal (read by static analysis at build time).
 @acl([
   {decision: 'allow_if', securityAttribute: 'has_admin_role', id: 'search-admin'},
-  {decision: 'allow_if', roles: ['aix_experience_admin'], id: 'search-experience-admin'}
+  {decision: 'allow_if', roles: ['aix_experience_admin'], id: 'search-experience-admin'},
+  {decision: 'allow_if', roles: ['x_ibmin_claudel.user'], id: 'search-user'}
 ])
 @discoverable(true)
 export default class OttoSearchWidget extends AIUXWidgetElement {

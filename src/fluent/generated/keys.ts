@@ -21,6 +21,10 @@ declare global {
                         table: 'sys_security_acl'
                         id: 'c35d2faf8d2046f3945013964d2272d5'
                     }
+                    'aiux-acl|aiux-otto-search|read|search-user': {
+                        table: 'sys_security_acl'
+                        id: 'aa9b6f0f76a44e959588a03a68ff0ce7'
+                    }
                     'aiux-acl|experience:claudelearningportal|read|app-admin': {
                         table: 'sys_security_acl'
                         id: '49a93f7bdb304e46b9fd937a662f22ee'
@@ -29,6 +33,10 @@ declare global {
                         table: 'sys_security_acl'
                         id: '10f1477d76ab4c6188e8f11c273da1c9'
                     }
+                    'aiux-acl|experience:claudelearningportal|read|app-user': {
+                        table: 'sys_security_acl'
+                        id: '67c37c33183641e4a718f98d592b2d31'
+                    }
                     'aiux-acl|x-ibmin-claudel-home-page|read|home-admin': {
                         table: 'sys_security_acl'
                         id: '49a8a64a3cd54ce3ab7ef40ead8e455a'
@@ -36,6 +44,10 @@ declare global {
                     'aiux-acl|x-ibmin-claudel-home-page|read|home-experience-admin': {
                         table: 'sys_security_acl'
                         id: 'e4bb8a2f0cce44c9a3b8d9cc1dd044a5'
+                    }
+                    'aiux-acl|x-ibmin-claudel-home-page|read|home-user': {
+                        table: 'sys_security_acl'
+                        id: 'a15df1d3575f4899af65a27ba9ca9898'
                     }
                     'aiux-color-swatch|claudelearningportal': {
                         table: 'sys_aix_color_swatch'
@@ -160,10 +172,36 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_security_acl_role'
+                        id: '38e67484a5204ed7887cd3577ea7f1ad'
+                        key: {
+                            sys_security_acl: 'a15df1d3575f4899af65a27ba9ca9898'
+                            sys_user_role: {
+                                id: '6e168fa02e0c48378833f886ebd5de25'
+                                key: {
+                                    name: 'x_ibmin_claudel.user'
+                                }
+                            }
+                        }
+                    },
+                    {
                         table: 'sn_glider_source_artifact'
                         id: '4c66f33eefcf4d0d8e8eae6206effe67'
                         key: {
                             name: 'aiux-source cc1ba035956134867d46987f9abc40fe'
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: '5333ac6784794fd09bf17e0b75b8b418'
+                        key: {
+                            sys_security_acl: 'aa9b6f0f76a44e959588a03a68ff0ce7'
+                            sys_user_role: {
+                                id: '6e168fa02e0c48378833f886ebd5de25'
+                                key: {
+                                    name: 'x_ibmin_claudel.user'
+                                }
+                            }
                         }
                     },
                     {
@@ -198,6 +236,26 @@ declare global {
                         key: {
                             application_file: 'cc1ba035956134867d46987f9abc40fe'
                             source_artifact: '4c66f33eefcf4d0d8e8eae6206effe67'
+                        }
+                    },
+                    {
+                        table: 'sys_user_role'
+                        id: 'da35dcb86c1b46cbb94fb8f1f5e1f255'
+                        key: {
+                            name: 'x_ibmin_claudel.user'
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: 'e0084227a74d475bac46044e6e695187'
+                        key: {
+                            sys_security_acl: '67c37c33183641e4a718f98d592b2d31'
+                            sys_user_role: {
+                                id: '6e168fa02e0c48378833f886ebd5de25'
+                                key: {
+                                    name: 'x_ibmin_claudel.user'
+                                }
+                            }
                         }
                     },
                 ]

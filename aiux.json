@@ -6,7 +6,8 @@
   "landing": "/home",
   "experienceAcls": [
     {"decision": "allow_if", "securityAttribute": "has_admin_role", "id": "app-admin"},
-    {"decision": "allow_if", "roles": ["aix_experience_admin"], "id": "app-experience-admin"}
+    {"decision": "allow_if", "roles": ["aix_experience_admin"], "id": "app-experience-admin"},
+    {"decision": "allow_if", "roles": ["x_ibmin_claudel.user"], "id": "app-user"}
   ],
   "createAnalyticsApp": true,
   "development": {
