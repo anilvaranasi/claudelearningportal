@@ -1,0 +1,65 @@
+name: Fix - grant learner role (DEV)
+
+# Manual. Runs scripts/fix-grant-learner-role.js on the DEV instance with
+# `now-sdk exec --file`: creates the "Claude Learning Portal Users" group, adds the
+# first ten active users whose name starts with "ab", and grants the group the
+# x_ibmin_claudel.user role.
+#
+# Run it twice: first with apply = false (default, dry run: only prints what it
+# would do), read the log, then run again with apply = true.
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Apply the changes. Leave unchecked for a dry run.
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# Never run two copies at once: both could create the group.
+concurrency:
+  group: fix-grant-learner-role
+  cancel-in-progress: false
+
+jobs:
+  run-script:
+    name: Run fix script on DEV
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The script ships with DRY_RUN = true. Flip it on a temp copy so the file
+      # in the repo stays safe by default.
+      - name: Prepare script
+        env:
+          APPLY: ${{ inputs.apply }}
+        run: |
+          cp scripts/fix-grant-learner-role.js "$RUNNER_TEMP/fix.js"
+          if [ "$APPLY" = "true" ]; then
+            sed -i 's/var DRY_RUN = true;/var DRY_RUN = false;/' "$RUNNER_TEMP/fix.js"
+          fi
+          grep -n "var DRY_RUN" "$RUNNER_TEMP/fix.js"
+
+      # Same non-interactive auth as the deploy job. The script uses the Glide API in
+      # global scope (groups and roles live there).
+      - name: Run script on DEV
+        env:
+          SN_SDK_NODE_ENV: SN_SDK_CI_INSTALL
+          SN_SDK_AUTH_TYPE: basic
+          SN_SDK_INSTANCE_URL: ${{ secrets.SN_DEV_INSTANCE }}
+          SN_SDK_USER: ${{ secrets.SN_DEV_USER }}
+          SN_SDK_USER_PWD: ${{ secrets.SN_DEV_PASS }}
+        run: pnpm exec now-sdk exec --file "$RUNNER_TEMP/fix.js" --scope global
