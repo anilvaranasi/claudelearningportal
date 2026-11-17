@@ -99,14 +99,14 @@
   var skipped = 0;
   for (var i = 0; i < users.length; i++) {
     var user = users[i];
-    if (groupId && rowExists('sys_user_grp_member', {group: groupId, user: user.id})) {
+    if (groupId && rowExists('sys_user_grmember', {group: groupId, user: user.id})) {
       skipped++;
       log('Already a member: ' + user.name);
       continue;
     }
     log('Add member: ' + user.name);
     if (!DRY_RUN) {
-      var member = new GlideRecord('sys_user_grp_member');
+      var member = new GlideRecord('sys_user_grmember');
       member.initialize();
       member.setValue('group', groupId);
       member.setValue('user', user.id);
