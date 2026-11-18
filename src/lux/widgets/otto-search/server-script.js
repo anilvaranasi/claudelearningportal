@@ -11,6 +11,7 @@ export default function server(data, _options, input) {
   }
 
   var MAX_QUERY_CHARS = 1000;
+  var MAX_SEARCHES_PER_HOUR = 20;
   var MAX_SUGGESTIONS = 3;
   var MAX_SUGGESTION_CHARS = 200;
   var SYSTEM_PROMPT =
@@ -35,6 +36,27 @@ export default function server(data, _options, input) {
     data.errorCode = 'not_configured';
     return;
   }
+
+  // Per-user limit. Every attempt is logged before the Claude call, so failed calls
+  // count too and a retry loop cannot get around the limit.
+  var userId = gs.getUserID();
+  var since = new GlideDateTime();
+  since.addSeconds(-3600);
+  var usage = new GlideAggregate('x_ibmin_claudel_search_log');
+  usage.addQuery('user', userId);
+  usage.addQuery('sys_created_on', '>=', since.getValue());
+  usage.addAggregate('COUNT');
+  usage.query();
+  var used = usage.next() ? parseInt(usage.getAggregate('COUNT'), 10) : 0;
+  if (used >= MAX_SEARCHES_PER_HOUR) {
+    data.isError = true;
+    data.errorCode = 'limit_reached';
+    return;
+  }
+  var logRow = new GlideRecord('x_ibmin_claudel_search_log');
+  logRow.initialize();
+  logRow.setValue('user', userId);
+  logRow.insert();
 
   var baseUrl = gs.getProperty(
     'x_ibmin_claudel.claude_base_url',

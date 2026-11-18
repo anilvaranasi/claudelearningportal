@@ -102,6 +102,10 @@ export default class OttoSearchWidget extends AIUXWidgetElement {
         return i18n.getMessage(
           'Claude is busy right now. Please try again in a moment.'
         );
+      case 'limit_reached':
+        return i18n.getMessage(
+          'You have reached the search limit for this hour. Please try again later.'
+        );
       case 'bad_request':
         return i18n.getMessage('That question could not be sent. Please try again.');
       default:
