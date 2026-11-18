@@ -1,0 +1,80 @@
+name: Update keys.ts (mydev)
+
+# Manual. Runs a normal (not frozen) build on the runner so now-sdk writes any new
+# entries into src/fluent/generated/keys.ts, then commits ONLY that file to mydev.
+# Use it after adding Fluent records (tables, roles, properties) or @acl rules,
+# because the nowdev pipeline builds with frozen keys and fails on a stale file.
+#
+# Flow: run this -> `git pull origin mydev` -> `git push origin mydev:nowdev`.
+# (A push made with GITHUB_TOKEN does not start other workflows, so nowdev is
+# pushed by hand.)
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Preview the keys.ts change only. Do not commit or push.
+        type: boolean
+        default: true
+
+concurrency:
+  group: update-keys
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update-keys:
+    name: Build and commit keys.ts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mydev
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # No --frozenKeys here on purpose: this build is what writes the new entries.
+      - name: Build
+        run: pnpm build
+
+      - name: Show keys.ts changes
+        run: |
+          {
+            echo "## keys.ts changes"
+            echo
+            if git diff --quiet -- src/fluent/generated/keys.ts; then
+              echo "No changes. keys.ts is already up to date."
+            else
+              echo '```'
+              git diff --stat -- src/fluent/generated/keys.ts
+              echo '```'
+              echo
+              echo '```diff'
+              git diff -U0 -- src/fluent/generated/keys.ts | grep -E "^[+-] " | head -80
+              echo '```'
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit and push to mydev
+        if: inputs.dry_run == false
+        run: |
+          if git diff --quiet -- src/fluent/generated/keys.ts; then
+            echo "keys.ts is already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/fluent/generated/keys.ts
+          git commit -m "chore: update generated keys.ts from CI build"
+          git pull --rebase origin mydev
+          git push origin mydev
