@@ -5,7 +5,8 @@ import { Table, ReferenceColumn } from '@servicenow/sdk/core'
 // the last hour to enforce the per-user limit. Time comes from the platform column
 // sys_created_on, so the table only needs to store who searched. The query text is
 // deliberately not stored.
-export const searchLog = Table({
+// The export name must equal the table name (SDK rule TS213).
+export const x_ibmin_claudel_search_log = Table({
     name: 'x_ibmin_claudel_search_log',
     label: 'Claude Search Log',
     schema: {
