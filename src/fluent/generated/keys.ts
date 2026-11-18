@@ -142,6 +142,15 @@ declare global {
                 }
                 composite: [
                     {
+                        table: 'sys_documentation'
+                        id: '1f5cf3b308ef412a81177974cc4a2f67'
+                        key: {
+                            name: 'x_ibmin_claudel_search_log'
+                            element: 'user'
+                            language: 'en'
+                        }
+                    },
+                    {
                         table: 'sys_security_acl_role'
                         id: '296551960a654146b3844c63952d23ad'
                         key: {
@@ -188,6 +197,14 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_dictionary'
+                        id: '505abbddb6e841e1bba57f4548834b73'
+                        key: {
+                            name: 'x_ibmin_claudel_search_log'
+                            element: 'user'
+                        }
+                    },
+                    {
                         table: 'sys_security_acl_role'
                         id: '5333ac6784794fd09bf17e0b75b8b418'
                         key: {
@@ -227,11 +244,42 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_dictionary'
+                        id: '7e88115cc57b4bc88d15c59acffd15a8'
+                        key: {
+                            name: 'x_ibmin_claudel_search_log'
+                            element: 'NULL'
+                        }
+                    },
+                    {
+                        table: 'ua_table_licensing_config'
+                        id: '861657909a3b4ba394e9c3ed14cf13cf'
+                        key: {
+                            name: 'x_ibmin_claudel_search_log'
+                        }
+                    },
+                    {
                         table: 'sn_glider_source_artifact_m2m'
                         id: '8e9a2c1e5a654720b9115be33ffa0aa4'
                         key: {
                             application_file: 'cc1ba035956134867d46987f9abc40fe'
                             source_artifact: '4c66f33eefcf4d0d8e8eae6206effe67'
+                        }
+                    },
+                    {
+                        table: 'sys_documentation'
+                        id: 'bfb735386e7141e593c34fd3ac4b91cd'
+                        key: {
+                            name: 'x_ibmin_claudel_search_log'
+                            element: 'NULL'
+                            language: 'en'
+                        }
+                    },
+                    {
+                        table: 'sys_db_object'
+                        id: 'ce816fa0bf3549e8919acfad12d04abd'
+                        key: {
+                            name: 'x_ibmin_claudel_search_log'
                         }
                     },
                     {
